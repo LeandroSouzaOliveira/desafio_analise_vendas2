@@ -3,12 +3,10 @@ package application;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
-
-import model.entities.Sale;
+import java.util.TreeMap;
 
 public class Program {
 
@@ -17,7 +15,7 @@ public class Program {
 		Locale.setDefault(Locale.US);
 		Scanner sc = new Scanner(System.in);
 		
-		List<Sale> sale = new ArrayList<>();
+		Map<String, Double> mapSeller = new TreeMap<>();
 		
 		System.out.print("Entre o caminho do arquivo: ");
 		String path = sc.nextLine();
@@ -27,20 +25,25 @@ public class Program {
 			String line = br.readLine();
 			while (line != null) {
 				String[] fields = line.split(",");
-				int month = Integer.parseInt(fields[0]);
-				int year = Integer.parseInt(fields[1]);
 				String seller = fields[2];
-				int items = Integer.parseInt(fields[3]);
 				double total = Double.parseDouble(fields[4]);
 				
-				sale.add(new Sale(month, year, seller, items, total));
+				if (mapSeller.containsKey(seller)) {
+					double sum = mapSeller.get(seller);
+					mapSeller.put(seller, total + sum);
+				}
+				else {
+					mapSeller.put(seller, total);
+				}
+				
 				line = br.readLine();
 			}
 			
 			System.out.println();
 			System.out.println("Total de vendas por vendedor:");
-			
-
+			for (String key : mapSeller.keySet()) {
+				System.out.println(key + ": " + String.format("%.2f", mapSeller.get(key)));
+			}	
 		}
 		catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
